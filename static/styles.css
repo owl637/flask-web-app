@@ -21,7 +21,7 @@ span {
 
 .db_info {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
 }
 
 form {
