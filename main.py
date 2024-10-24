@@ -75,33 +75,22 @@ def execute_sql():
         conn.row_factory = sqlite3.Row  # Use Row factory to access results as dictionaries
         cursor = conn.cursor()
         cursor.execute(sql_query)
-        if sql_query.strip().upper().startswith("SELECT"):
+        conn.commit()
+        table_name = None
+        tables = get_tables()
+        for table in tables:
+            if table in sql_query.split('\n')[0]: # Check if table name is in the first line of the query
+                table_name = table
+                print(table_name)
+                break 
+        if table_name:
+            cursor.execute(f"SELECT * FROM {table_name}")
             rows = cursor.fetchall()
-            if rows:
-                columns = rows[0].keys()  # Extract column names
-                result = [dict(row) for row in rows]  # Convert rows to list of dictionaries
-        else:
-            conn.commit()
-            result = f"Query executed successfully. Rows affected: {cursor.rowcount}"
-
-            # Extract table name safely for modification queries
-            if sql_query.strip().upper().startswith("INSERT INTO"):
-                table_name = sql_query.split()[2]  # INSERT INTO <table_name>
-            elif sql_query.strip().upper().startswith("DELETE FROM"):
-                table_name = sql_query.split()[2]  # DELETE FROM <table_name>
-            elif sql_query.strip().upper().startswith("UPDATE"):
-                table_name = sql_query.split()[1]  # UPDATE <table_name>
-            else:
-                table_name = None
-            
-            # If table name is identified, run SELECT * to show updated content
-            if table_name:
-                cursor.execute(f"SELECT * FROM {table_name}")
+            if not rows:
+                cursor.execute(f"PRAGMA table_info({table_name})")
                 rows = cursor.fetchall()
-                if rows:
-                    columns = rows[0].keys()  # Extract column names
-                    result = [dict(row) for row in rows]  # Convert rows to list of dictionaries
-
+            columns = rows[0].keys()
+            result = [dict(row) for row in rows]
         conn.close()
     except sqlite3.Error as e:
         result = f"An error occurred: {e}"

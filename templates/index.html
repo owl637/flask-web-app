@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/styles.css">
-    <title>Database Manager</title>
+    <title>SQL Execution App</title>
     <script>
         function toggleView() {
             var tableView = document.getElementById("table_view");
@@ -20,22 +20,24 @@
     </script>
 </head>
 <body>
-    <h1>Database Manager</h1>
+    <h1>SQL Execution App</h1>
 
-    <form action="/load_db" method="post" enctype="multipart/form-data">
-        <label for="db_file">Load Existing Database:</label>
-        <input type="file" id="db_file" name="db_file" accept=".db">
-        <button type="submit">Load</button>
-    </form>
+    <h2>Current Database: 
+        <span>{{ db_name }}</span>
+    </h2>
+    <div class="db_info">
+        <form action="/load_db" method="post" enctype="multipart/form-data">
+            <label for="db_file">Load Existing Database:</label>
+            <input type="file" id="db_file" name="db_file" accept=".db">
+            <button type="submit">Load</button>
+        </form>
 
-    <form action="/create_db" method="post">
-        <label for="new_db_name">New Database Name:</label>
-        <input type="text" id="new_db_name" name="new_db_name" placeholder="Enter new database name">
-        <button type="submit">Create New Database</button>
-    </form>
-
-    <h2>Current Database: {{ db_name }}</h2>
-
+        <form action="/create_db" method="post">
+            <label for="new_db_name">New Database Name:</label>
+            <input type="text" id="new_db_name" name="new_db_name" placeholder="Enter new database name">
+            <button type="submit">Create New Database</button>
+        </form>
+    </div>
     <h2>Tables in Database:</h2>
     <ul>
         {% for table in tables %}
