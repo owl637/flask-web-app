@@ -85,27 +85,8 @@ def execute_sql():
                 columns = rows[0].keys()
             result = [dict(row) for row in rows]
 
-        elif sql_query.strip().upper().startswith("CREATE TABLE"):
-            # CREATE TABLE文の場合、実行後にPRAGMAでテーブル情報を取得
-            cursor.execute(sql_query)
-            conn.commit()
-
-            # テーブル名を取得してPRAGMAで情報を取得
-            table_name = sql_query.split()[2]  # テーブル名を取得
-            cursor.execute(f"PRAGMA table_info({table_name})")
-            rows = cursor.fetchall()
-            if rows:
-                columns = rows[0].keys()
-            result = [dict(row) for row in rows]
-
-        elif sql_query.strip().upper().startswith("ALTER TABLE"):
-            # ALTER TABLE文の場合
-            cursor.execute(sql_query)
-            conn.commit()
-            result = f"ALTER TABLE executed successfully: {sql_query}"
-
         else:
-            # その他の文（INSERT, UPDATE, DELETEなど）は実行後に対象テーブルの全データを表示
+            # その他の文（CREATE TABLE, ALTER TABLE, INSERT, UPDATE, DELETEなど）
             cursor.execute(sql_query)
             conn.commit()
 
@@ -115,7 +96,9 @@ def execute_sql():
                 if table in sql_query:
                     affected_table = table
                     break
+
             if affected_table:
+                # テーブルの全データを取得して表示
                 cursor.execute(f"SELECT * FROM {affected_table}")
                 rows = cursor.fetchall()
                 if rows:
