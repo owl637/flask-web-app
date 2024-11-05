@@ -74,26 +74,61 @@ def execute_sql():
         conn = sqlite3.connect(db_file)
         conn.row_factory = sqlite3.Row  # Use Row factory to access results as dictionaries
         cursor = conn.cursor()
-        cursor.execute(sql_query)
-        conn.commit()
-        table_name = None
         tables = get_tables()
-        for table in tables:
-            if table in sql_query.split('\n')[0]: # Check if table name is in the first line of the query
-                table_name = table
-                print(table_name)
-                break 
-        if table_name:
-            cursor.execute(f"SELECT * FROM {table_name}")
+
+        # SQL文の判定
+        if sql_query.strip().upper().startswith("SELECT"):
+            # SELECT文の場合、実行して結果を返す
+            cursor.execute(sql_query)
             rows = cursor.fetchall()
-            if not rows:
-                cursor.execute(f"PRAGMA table_info({table_name})")
-                rows = cursor.fetchall()
-            columns = rows[0].keys()
+            if rows:
+                columns = rows[0].keys()
             result = [dict(row) for row in rows]
+
+        elif sql_query.strip().upper().startswith("CREATE TABLE"):
+            # CREATE TABLE文の場合、実行後にPRAGMAでテーブル情報を取得
+            cursor.execute(sql_query)
+            conn.commit()
+
+            # テーブル名を取得してPRAGMAで情報を取得
+            table_name = sql_query.split()[2]  # テーブル名を取得
+            cursor.execute(f"PRAGMA table_info({table_name})")
+            rows = cursor.fetchall()
+            if rows:
+                columns = rows[0].keys()
+            result = [dict(row) for row in rows]
+
+        elif sql_query.strip().upper().startswith("ALTER TABLE"):
+            # ALTER TABLE文の場合
+            cursor.execute(sql_query)
+            conn.commit()
+            result = f"ALTER TABLE executed successfully: {sql_query}"
+
+        else:
+            # その他の文（INSERT, UPDATE, DELETEなど）は実行後に対象テーブルの全データを表示
+            cursor.execute(sql_query)
+            conn.commit()
+
+            # 影響を与えるテーブル名を推測してデータを表示
+            affected_table = None
+            for table in tables:
+                if table in sql_query:
+                    affected_table = table
+                    break
+            if affected_table:
+                cursor.execute(f"SELECT * FROM {affected_table}")
+                rows = cursor.fetchall()
+                if rows:
+                    columns = rows[0].keys()
+                result = [dict(row) for row in rows]
+            else:
+                result = "Query executed successfully, but no table data to display."
+
         conn.close()
+
     except sqlite3.Error as e:
         result = f"An error occurred: {e}"
+
     return render_template('index.html', tables=get_tables(), result=result, columns=columns, sql_query=sql_query, db_name=session.get('db_file_name', ''))
 
 def get_tables():
