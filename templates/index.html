@@ -54,11 +54,11 @@
     {% if result %}
         <h2>SQL Query Result:</h2>
         <button onclick="toggleView()">Toggle View</button>
-        <div id="array_view" style="display: block;">
+        <div id="array_view" style="display: none;">
             <pre>{{ result }}</pre>
         </div>
-        <div id="table_view" style="display: none;">
-            <table border="1">
+        <div id="table_view" style="display: block;">
+            <table class="styled-table">
                 <thead>
                     <tr>
                         {% for column in columns %}
