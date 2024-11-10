@@ -22,6 +22,7 @@ span {
 .db_info {
   display: flex;
   justify-content: left;
+  align-items: space-between;
 }
 
 form {
@@ -31,18 +32,28 @@ form {
   border: 1px solid #ccc;
   border-radius: 10px;
   margin-right: 20px;
-  max-width: 60%;
 }
 
 label {
   font-size: 1.1em;
 }
 
-input, textarea {
+input {
   width: 90%;
   margin-top: 15px;
   padding: 10px;
   font-size: 1.0em;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-left: 10px;
+}
+
+textarea {
+  width: 90%;
+  height: 300px;
+  margin-top: 15px;
+  padding: 10px;
+  font-size: 1.8em;
   border-radius: 5px;
   border: 1px solid #ccc;
   margin-left: 10px;
@@ -64,7 +75,7 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #2b642e;
 }
 
 ul {
@@ -86,4 +97,31 @@ pre {
   padding: 10px;
   border-radius: 5px;
   overflow: auto;
+}
+
+.styled-table {
+  width: 90%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 16px;
+  text-align: left;
+}
+
+.styled-table th, .styled-table td {
+  padding: 10px 12px;
+  border: 1px solid #dddddd;
+}
+
+.styled-table thead th {
+  background-color: #333333;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.styled-table tbody tr:nth-child(even) {
+  background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:hover {
+  background-color: #e1e1e1;
 }
