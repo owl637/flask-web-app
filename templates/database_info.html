@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Load/Create Database{% endblock %}
+
+{% block content %}
+    <h1>Current Database Info</h1>
+    <h2>Current Database: <span>{{ db_name }}</span></h2>
+
+    <h2>Tables in Database:</h2>
+    <ul>
+        {% for table in tables %}
+            <li>{{ table }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Download Database:</h2>
+    <a href="/download_db"><button type="button">Download Current Database</button></a>
+{% endblock %}

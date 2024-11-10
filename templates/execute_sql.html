@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Execute SQL{% endblock %}
+{% block script %}
+<script>   
+    document.addEventListener("DOMContentLoaded", function() {
+        const textarea = document.getElementById("autoResizeTextArea");
+    
+        function autoResize() {
+            textarea.style.height = "5px";
+            textarea.style.height = (textarea.scrollHeight) + "px";
+        }
+    
+        textarea.addEventListener("input", autoResize);
+    
+        // 初期ロード時に高さを設定
+        autoResize();
+    });    
+
+    function toggleView() {
+        const arrayView = document.getElementById("array_view");
+        const tableView = document.getElementById("table_view");
+
+        if (arrayView.style.display === "none") {
+            arrayView.style.display = "block";
+            tableView.style.display = "none";
+        } else {
+            arrayView.style.display = "none";
+            tableView.style.display = "block";
+        }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+    <h2>Tables in Database:</h2>
+
+    <ul>
+        {% for table in tables %}
+            <li>{{ table }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Execute SQL Query:</h2>
+    <form action="{{ url_for('execute_sql') }}" method="post">
+        <textarea id="autoResizeTextArea" name="sql_query" rows="5" cols="60" placeholder="Enter your SQL query here...">{{ sql_query }}</textarea><br>
+        <button type="submit">Execute</button>
+    </form>
+
+    {% if result %}
+        <h2>SQL Query Result:</h2>
+        <button onclick="toggleView()">Toggle View</button>
+        <div id="array_view" style="display: none;">
+            <pre>{{ result }}</pre>
+        </div>
+        <div id="table_view" style="display: block;">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        {% for column in columns %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in result %}
+                        <tr>
+                            {% for column in columns %}
+                                <td>{{ row[column] }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}
