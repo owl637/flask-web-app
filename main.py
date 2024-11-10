@@ -98,6 +98,14 @@ def execute_sql():
                 columns = rows[0].keys()
             result = [dict(row) for row in rows]
 
+        elif sql_query.strip().upper().startswith("PRAGMA"):
+            # PRAGMA文の場合、実行して結果を返す
+            cursor.execute(sql_query)
+            rows = cursor.fetchall()
+            if rows:
+                columns = rows[0].keys()
+            result = [dict(row) for row in rows]
+
         else:
             # その他の文（INSERT, UPDATE, DELETEなど）は実行後に対象テーブルの全データを表示
             cursor.execute(sql_query)
