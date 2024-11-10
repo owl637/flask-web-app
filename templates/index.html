@@ -1,87 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/styles.css">
-    <title>SQL Execution App</title>
-    <script>
-        function toggleView() {
-            var tableView = document.getElementById("table_view");
-            var arrayView = document.getElementById("array_view");
-            if (tableView.style.display === "none") {
-                tableView.style.display = "block";
-                arrayView.style.display = "none";
-            } else {
-                tableView.style.display = "none";
-                arrayView.style.display = "block";
-            }
-        }
-    </script>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
     <h1>SQL Execution App</h1>
+    <h2>Current Database: <span>{{ db_name }}</span></h2>
 
-    <h2>Current Database: 
-        <span>{{ db_name }}</span>
-    </h2>
-    <div class="db_info">
-        <form action="/load_db" method="post" enctype="multipart/form-data">
-            <label for="db_file">Load Existing Database:</label>
-            <input type="file" id="db_file" name="db_file" accept=".db">
-            <button type="submit">Load</button>
-        </form>
-
-        <form action="/create_db" method="post">
-            <label for="new_db_name">New Database Name:</label>
-            <input type="text" id="new_db_name" name="new_db_name" placeholder="Enter new database name">
-            <button type="submit">Create New Database</button>
-        </form>
-    </div>
-    <h2>Tables in Database:</h2>
-    <ul>
-        {% for table in tables %}
-            <li>{{ table }}</li>
-        {% endfor %}
-    </ul>
-
-    <h2>Execute SQL Query:</h2>
-    <form action="/execute_sql" method="post">
-        <textarea name="sql_query" rows="5" cols="60" placeholder="Enter your SQL query here...">{{ sql_query }}</textarea><br>
-        <button type="submit">Execute</button>
+    <h2>Load Existing Database:</h2>
+    <form action="{{ url_for('database_info') }}" method="post" enctype="multipart/form-data">
+        <label for="db_file">Load Existing Database:</label>
+        <input type="file" id="db_file" name="db_file" accept=".db">
+        <button type="submit">Load</button>
     </form>
 
-    {% if result %}
-        <h2>SQL Query Result:</h2>
-        <button onclick="toggleView()">Toggle View</button>
-        <div id="array_view" style="display: none;">
-            <pre>{{ result }}</pre>
-        </div>
-        <div id="table_view" style="display: block;">
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        {% for column in columns %}
-                            <th>{{ column }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in result %}
-                        <tr>
-                            {% for column in columns %}
-                                <td>{{ row[column] }}</td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
-
-    <h2>Download Database:</h2>
-    <a href="/download_db"><button type="button">Download Current Database</button></a>
-
-
-</body>
-</html>
+    <h2>Create New Database:</h2>
+    <form action="{{ url_for('create_db') }}" method="post">
+        <label for="new_db_name">Create New Database:</label>
+        <input type="text" id="new_db_name" name="new_db_name" placeholder="Enter new database name">
+        <button type="submit">Create</button>
+    </form>
+{% endblock %}
